@@ -32,6 +32,50 @@ public class JacksonTest {
 		mapper.addHandler(new ProblemHandler());
 	}
 	
+	public void testAcceptActivity() {
+		
+	}
+	
+	@Test
+	public void testFollowActivity() {
+		
+	}
+	
+	@Test
+	public void testOrderedCollectionLinks() throws JsonProcessingException {
+		String json = "{\"@context\":\"https://www.w3.org/ns/activitystreams\","
+				+ "\"type\":\"OrderedCollection\","
+				+ "\"id\":\"https://mixednutz.net/user/followers\","
+				+ "\"orderedItems\":["
+					+ "\"http://mixednutz.net\","
+					+ "\"http://andrewfesta.com\","
+					+ "\"https://www.google.com\"],"
+				+ "\"totalItems\":3}";
+		
+		// Deserialize
+		BaseObjectOrLink object = mapper.readValue(json, BaseObjectOrLink.class);
+		
+		assertTrue(object instanceof OrderedCollectionImpl);
+		OrderedCollectionImpl orderedcollection = (OrderedCollectionImpl) object;
+		assertEquals("https://mixednutz.net/user/followers", orderedcollection.getId().toString());
+		assertEquals(3L, orderedcollection.getTotalItems());
+		assertEquals(3, orderedcollection.getItems().size());
+		assertTrue(orderedcollection.getItems().get(0) instanceof Link);
+		Link link = (Link)orderedcollection.getItems().get(0);
+		assertEquals("http://mixednutz.net", link.getHref().toString());
+		
+		//Serialize new object from scratch
+		orderedcollection = new OrderedCollectionImpl();
+		orderedcollection.set_Context(BaseObjectOrLink.CONTEXT);
+		orderedcollection.setItems(List.of(new LinkImpl("http://mixednutz.net"), new LinkImpl("http://andrewfesta.com"), new LinkImpl("https://www.google.com")));
+		orderedcollection.setTotalItems(3L);
+		orderedcollection.setId(URI.create("https://mixednutz.net/user/followers"));
+		
+	
+		String actual = mapper.writeValueAsString(orderedcollection);
+		assertEquals(json, actual);
+	}
+	
 	@Test
 	public void testOrderedCollectionPage() throws JsonProcessingException {
 		String json = "{\"@context\":\"https://www.w3.org/ns/activitystreams\","
