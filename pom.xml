@@ -58,7 +58,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		
-		<activitypub-api.version>0.0.1</activitypub-api.version>
+		<activitypub-api.version>0.0.2</activitypub-api.version>
 		<spring-social.version>1.1.6.RELEASE</spring-social.version>
 	</properties>
 
