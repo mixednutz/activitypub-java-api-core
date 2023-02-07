@@ -173,7 +173,7 @@ public class JacksonTest {
 		String json = "{\"@context\":\"https://www.w3.org/ns/activitystreams\","
 				+ "\"type\":\"Person\","
 				+ "\"id\":\"https://mixednutz.net/user\","
-				+ "\"inbox\":\"Not Implemented\","
+				+ "\"inbox\":\"https://mixednutz.net/inbox\","
 				+ "\"outbox\":\"https://mixednutz.net/outbox\","
 				+ "\"preferredUsername\":\"Andy\"}";
 		
@@ -183,7 +183,7 @@ public class JacksonTest {
 		assertTrue(object instanceof Person);
 		Person person = (Person) object;
 		assertEquals("https://mixednutz.net/user",person.getId().toString());
-		assertEquals("Not Implemented",person.getInbox().toString());
+		assertEquals("https://mixednutz.net/inbox",person.getInbox().toString());
 		assertEquals("https://mixednutz.net/outbox",person.getOutbox().toString());
 		assertEquals("Andy",person.getPreferredUsername());
 		
@@ -196,7 +196,7 @@ public class JacksonTest {
 		person.set_Context(BaseObjectOrLink.CONTEXT);
 		person.setId(URI.create("https://mixednutz.net/user"));
 		person.setPreferredUsername("Andy");
-		person.setInbox("Not Implemented");
+		person.setInbox(URI.create("https://mixednutz.net/inbox"));
 		person.setOutbox(URI.create("https://mixednutz.net/outbox"));
 		
 		actual = mapper.writeValueAsString(person);
@@ -213,7 +213,7 @@ public class JacksonTest {
 					+ "\"type\":\"Image\","
 					+ "\"name\":\"Andy's avatar\","
 					+ "\"url\":\"https://mixednutz.net/avatar.jpg\"},"
-				+ "\"inbox\":\"Not Implemented\","
+				+ "\"inbox\":\"https://mixednutz.net/inbox\","
 				+ "\"outbox\":\"https://mixednutz.net/outbox\","
 				+ "\"preferredUsername\":\"Andy\"}";
 		
@@ -223,7 +223,7 @@ public class JacksonTest {
 		assertTrue(object instanceof Person);
 		Person person = (Person) object;
 		assertEquals("https://mixednutz.net/user",person.getId().toString());
-		assertEquals("Not Implemented",person.getInbox().toString());
+		assertEquals("https://mixednutz.net/inbox",person.getInbox().toString());
 		assertEquals("https://mixednutz.net/outbox",person.getOutbox().toString());
 		assertEquals("Andy",person.getPreferredUsername());
 		assertNotNull(person.getIcon());
@@ -243,7 +243,7 @@ public class JacksonTest {
 		person.set_Context(BaseObjectOrLink.CONTEXT);
 		person.setId(URI.create("https://mixednutz.net/user"));
 		person.setPreferredUsername("Andy");
-		person.setInbox("Not Implemented");
+		person.setInbox(URI.create("https://mixednutz.net/inbox"));
 		person.setOutbox(URI.create("https://mixednutz.net/outbox"));
 		icon = new ImageImpl();
 		icon.setUrl("https://mixednutz.net/avatar.jpg");

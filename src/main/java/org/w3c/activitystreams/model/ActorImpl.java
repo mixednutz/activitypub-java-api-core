@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class ActorImpl extends org.w3c.activitystreams.model.BaseObjectOrLink implements Actor {
 	
 	
-	private String inbox;
+	private URI inbox;
 	private URI outbox;
 	
 	private String preferredUsername;
@@ -23,6 +23,8 @@ public class ActorImpl extends org.w3c.activitystreams.model.BaseObjectOrLink im
 	@JsonSerialize (using = PropertyListSerializer.class)
 	private List<BaseObjectOrLink> icon;
 	
+	private PublicKey publicKey;
+	
 	public ActorImpl(String type) {
 		super(type);
 	}
@@ -30,10 +32,10 @@ public class ActorImpl extends org.w3c.activitystreams.model.BaseObjectOrLink im
 		super("Actor");
 	}
 	
-	public String getInbox() {
+	public URI getInbox() {
 		return inbox;
 	}
-	public void setInbox(String inbox) {
+	public void setInbox(URI inbox) {
 		this.inbox = inbox;
 	}
 	public URI getOutbox() {
@@ -53,6 +55,12 @@ public class ActorImpl extends org.w3c.activitystreams.model.BaseObjectOrLink im
 	}
 	public void setIcon(List<BaseObjectOrLink> icon) {
 		this.icon = icon;
+	}
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
 	}
 
 }
