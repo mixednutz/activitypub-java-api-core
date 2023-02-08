@@ -56,6 +56,8 @@ public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectO
 	BaseObjectOrLink to;
 	@JsonSerialize (using = PropertySerializer.class)
 	BaseObjectOrLink cc;
+	@JsonSerialize (using = PropertySerializer.class)
+	BaseObjectOrLink inReplyTo;
 	
 	ZonedDateTime published;
 	
@@ -166,6 +168,14 @@ public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectO
 
 	public void setHref(URI href) {
 		this.href = href;
+	}
+
+	public BaseObjectOrLink getInReplyTo() {
+		return inReplyTo;
+	}
+
+	public void setInReplyTo(BaseObjectOrLink inReplyTo) {
+		this.inReplyTo = inReplyTo;
 	}
 		
 }
