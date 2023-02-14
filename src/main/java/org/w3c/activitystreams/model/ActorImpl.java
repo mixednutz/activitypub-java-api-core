@@ -16,6 +16,8 @@ public class ActorImpl extends org.w3c.activitystreams.model.BaseObjectOrLink im
 	
 	private URI inbox;
 	private URI outbox;
+	private URI followers;
+	private URI following;
 	
 	private String preferredUsername;
 	
@@ -43,6 +45,18 @@ public class ActorImpl extends org.w3c.activitystreams.model.BaseObjectOrLink im
 	}
 	public void setOutbox(URI outbox) {
 		this.outbox = outbox;
+	}
+	public URI getFollowers() {
+		return followers;
+	}
+	public void setFollowers(URI followers) {
+		this.followers = followers;
+	}
+	public URI getFollowing() {
+		return following;
+	}
+	public void setFollowing(URI following) {
+		this.following = following;
 	}
 	public String getPreferredUsername() {
 		return preferredUsername;

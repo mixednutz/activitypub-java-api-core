@@ -2,20 +2,26 @@ package org.w3c.activitystreams.model;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.util.List;
 
+import org.w3c.activitypub.util.ContextListSerializer;
+import org.w3c.activitypub.util.PropertyListSerializer;
 import org.w3c.activitypub.util.PropertySerializer;
 import org.w3c.activitystreams.ObjectOrLink;
+import org.w3c.activitystreams.model.activity.Accept;
 import org.w3c.activitystreams.model.activity.Create;
+import org.w3c.activitystreams.model.activity.Follow;
 import org.w3c.activitystreams.model.actor.Person;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonInclude (JsonInclude.Include.NON_NULL)
@@ -27,8 +33,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 	@Type (value = ObjectImpl.class),
 	@Type (value = ActivityImpl.class),
 	@Type (value = ActorImpl.class),
+	@Type (value = Accept.class),
     @Type (value = CollectionImpl.class),
     @Type (value = Create.class),
+    @Type (value = Follow.class),
     @Type (value = ImageImpl.class),
     @Type (value = LinkImpl.class),
     @Type (value = Note.class),
@@ -42,7 +50,10 @@ public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectO
 	public static final String CONTEXT = "https://www.w3.org/ns/activitystreams";
 	public static final String PUBLIC = CONTEXT+"#Public";
 	
-	String _context;
+	@JsonSerialize (using = ContextListSerializer.class)
+	@JsonFormat (with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+	List<java.lang.Object> context;
+//	URI _context;
 	String type;
 	URI id;
 	String name;
@@ -52,10 +63,12 @@ public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectO
 	String summary;
 	@JsonSerialize (using = PropertySerializer.class)
 	BaseObjectOrLink attributedTo;
-	@JsonSerialize (using = PropertySerializer.class)
-	BaseObjectOrLink to;
-	@JsonSerialize (using = PropertySerializer.class)
-	BaseObjectOrLink cc;
+	@JsonFormat (with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+	@JsonSerialize (using = PropertyListSerializer.class)
+	List<BaseObjectOrLink> to;
+	@JsonFormat (with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+	@JsonSerialize (using = PropertyListSerializer.class)
+	List<BaseObjectOrLink> cc;
 	@JsonSerialize (using = PropertySerializer.class)
 	BaseObjectOrLink inReplyTo;
 	
@@ -69,14 +82,23 @@ public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectO
 		super();
 		this.type = type;
 	}
-	
-	@JsonProperty("@context")	
-	public String get_Context() {
-		return _context;
+	@JsonProperty ("@context")
+	public List<Object> getContext() {
+		return context;
 	}
-	public void set_Context(String context) {
-		this._context = context;
+	@JsonProperty ("@context")
+	public void setContext(List<Object> context) {
+		this.context = context;
 	}
+//	@JsonProperty ("@context")
+//	public URI get_Context() {
+//		return _context;
+//	}
+//	@JsonProperty ("@context")
+//	public void set_Context(URI _context) {
+//		this._context = _context;
+//	}
+
 	public String getType() {
 		return type;
 	}
@@ -136,19 +158,19 @@ public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectO
 		this.attributedTo = attributedTo;
 	}
 
-	public BaseObjectOrLink getTo() {
+	public List<BaseObjectOrLink> getTo() {
 		return to;
 	}
 
-	public void setTo(BaseObjectOrLink to) {
+	public void setTo(List<BaseObjectOrLink> to) {
 		this.to = to;
 	}
 
-	public BaseObjectOrLink getCc() {
+	public List<BaseObjectOrLink> getCc() {
 		return cc;
 	}
 
-	public void setCc(BaseObjectOrLink cc) {
+	public void setCc(List<BaseObjectOrLink> cc) {
 		this.cc = cc;
 	}
 

@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.activitystreams.model.BaseObjectOrLink;
 import org.w3c.activitystreams.model.LinkImpl;
-import org.w3c.activitystreams.model.ObjectImpl;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
@@ -29,5 +28,6 @@ public class ProblemHandler extends DeserializationProblemHandler {
 		}
 
 	}
+
 
 }

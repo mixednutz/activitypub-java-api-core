@@ -17,10 +17,14 @@ import org.w3c.activitystreams.model.LinkImpl;
 import org.w3c.activitystreams.model.OrderedCollectionImpl;
 import org.w3c.activitystreams.model.OrderedCollectionPageImpl;
 import org.w3c.activitystreams.model.activity.Create;
+import org.w3c.activitystreams.model.activity.Follow;
 import org.w3c.activitystreams.model.actor.Person;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class JacksonTest {
 	
@@ -30,6 +34,9 @@ public class JacksonTest {
 	public void setup() {
 		mapper = new ObjectMapper();
 		mapper.addHandler(new ProblemHandler());
+		JavaTimeModule javaTimeModule=new JavaTimeModule();
+        mapper.registerModule(javaTimeModule);
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 	}
 	
 	public void testAcceptActivity() {
@@ -37,8 +44,65 @@ public class JacksonTest {
 	}
 	
 	@Test
-	public void testFollowActivity() {
+	public void testFollowActivity1() throws JsonProcessingException {
+		String json ="{\"@context\":\"https://www.w3.org/ns/activitystreams\","
+				+ "\"type\":\"Follow\","
+				+ "\"actor\":{\"type\":\"Person\",\"id\":\"https://mixednutz.net/sally\"},"
+				+ "\"object\":{\"type\":\"Person\",\"id\":\"https://mixednutz.net/john\"},"
+				+ "\"summary\":\"Sally followed John\"}";
 		
+		// Deserialize
+		BaseObjectOrLink object = mapper.readValue(json, BaseObjectOrLink.class);
+				
+		assertTrue(object instanceof Follow);
+		Follow follow = (Follow) object;
+		assertTrue(follow.getActor() instanceof Person);
+		assertEquals("https://mixednutz.net/sally",((Person)follow.getActor()).getId().toString());
+		assertTrue(follow.getObject() instanceof Person);
+		assertEquals("https://mixednutz.net/john",((Person)follow.getObject()).getId().toString());
+				
+		//Serialize new object from scratch
+		follow = new Follow();
+		follow.setContext(List.of(BaseObjectOrLink.CONTEXT));
+		follow.setSummary("Sally followed John");
+		Person sally = new Person();
+		sally.setId(URI.create("https://mixednutz.net/sally"));
+		Person john = new Person();
+		john.setId(URI.create("https://mixednutz.net/john"));
+		follow.setActor(sally);
+		follow.setObject(john);
+		
+		String actual = mapper.writeValueAsString(follow);
+		assertEquals(json, actual);
+	}
+	
+	@Test
+	public void testFollowActivity2() throws JsonProcessingException {
+		String json = "{\"@context\":\"https://www.w3.org/ns/activitystreams\","
+				+ "\"type\":\"Follow\","
+				+ "\"actor\":\"https://mixednutz.net/sally\","
+				+ "\"object\":\"https://mixednutz.net/john\","
+				+ "\"summary\":\"Sally followed John\"}";
+		
+		// Deserialize
+		BaseObjectOrLink object = mapper.readValue(json, BaseObjectOrLink.class);
+		
+		assertTrue(object instanceof Follow);
+		Follow follow = (Follow) object;
+		assertTrue(follow.getActor() instanceof Link);
+		assertEquals("https://mixednutz.net/sally",((Link)follow.getActor()).getHref().toString());
+		assertTrue(follow.getObject() instanceof Link);
+		assertEquals("https://mixednutz.net/john",((Link)follow.getObject()).getHref().toString());
+		
+		//Serialize new object from scratch
+		follow = new Follow();
+		follow.setContext(List.of(BaseObjectOrLink.CONTEXT));
+		follow.setSummary("Sally followed John");
+		follow.setActor(new LinkImpl(URI.create("https://mixednutz.net/sally")));
+		follow.setObject(new LinkImpl(URI.create("https://mixednutz.net/john")));
+		
+		String actual = mapper.writeValueAsString(follow);
+		assertEquals(json, actual);
 	}
 	
 	@Test
@@ -66,7 +130,7 @@ public class JacksonTest {
 		
 		//Serialize new object from scratch
 		orderedcollection = new OrderedCollectionImpl();
-		orderedcollection.set_Context(BaseObjectOrLink.CONTEXT);
+		orderedcollection.setContext(List.of(BaseObjectOrLink.CONTEXT));
 		orderedcollection.setItems(List.of(new LinkImpl("http://mixednutz.net"), new LinkImpl("http://andrewfesta.com"), new LinkImpl("https://www.google.com")));
 		orderedcollection.setTotalItems(3L);
 		orderedcollection.setId(URI.create("https://mixednutz.net/user/followers"));
@@ -104,7 +168,7 @@ public class JacksonTest {
 		
 		//Serialize new object from scratch
 		orderedcollection = new OrderedCollectionPageImpl();
-		orderedcollection.set_Context(BaseObjectOrLink.CONTEXT);
+		orderedcollection.setContext(List.of(BaseObjectOrLink.CONTEXT));
 		orderedcollection.setItems(List.of(new Create(), new Create(), new Create()));
 		orderedcollection.setTotalItems(3L);
 		orderedcollection.setPartOf(URI.create("https://mixednutz.net/user/outbox"));
@@ -137,7 +201,7 @@ public class JacksonTest {
 	}
 	
 	@Test
-	public void testOrderedCollection2() throws JsonProcessingException {
+	public void testOrderedCollection2() throws JsonMappingException, JsonProcessingException  {
 		String json = "{\"@context\":\"https://www.w3.org/ns/activitystreams\","
 				+ "\"type\":\"OrderedCollection\","
 				+ "\"id\":\"https://mixednutz.net/user/outbox\","
@@ -154,12 +218,18 @@ public class JacksonTest {
 		assertEquals("https://mixednutz.net/user/outbox/next", first.getHref().toString());
 		
 		//Re-serialize
-		String actual = mapper.writeValueAsString(orderedcollection);
+		String actual =null;
+		try {
+			actual = mapper.writeValueAsString(orderedcollection);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		assertEquals(json, actual);
 		
 		//Serialize new object from scratch
 		orderedcollection = new OrderedCollectionImpl();
-		orderedcollection.set_Context(BaseObjectOrLink.CONTEXT);
+		orderedcollection.setContext(List.of(BaseObjectOrLink.CONTEXT));
 		orderedcollection.setId(URI.create("https://mixednutz.net/user/outbox"));
 		orderedcollection.setFirst(new LinkImpl(URI.create("https://mixednutz.net/user/outbox/next")));
 		
@@ -193,7 +263,7 @@ public class JacksonTest {
 		
 		//Serialize new object from scratch
 		person = new Person();
-		person.set_Context(BaseObjectOrLink.CONTEXT);
+		person.setContext(List.of(BaseObjectOrLink.CONTEXT));
 		person.setId(URI.create("https://mixednutz.net/user"));
 		person.setPreferredUsername("Andy");
 		person.setInbox(URI.create("https://mixednutz.net/inbox"));
@@ -240,7 +310,7 @@ public class JacksonTest {
 		
 		//Serialize new object from scratch
 		person = new Person();
-		person.set_Context(BaseObjectOrLink.CONTEXT);
+		person.setContext(List.of(BaseObjectOrLink.CONTEXT));
 		person.setId(URI.create("https://mixednutz.net/user"));
 		person.setPreferredUsername("Andy");
 		person.setInbox(URI.create("https://mixednutz.net/inbox"));
@@ -254,4 +324,86 @@ public class JacksonTest {
 		assertEquals(json, actual);
 	}
 	
+	@Test
+	public void testPersonFromMastodon() throws JsonProcessingException {
+		
+		String json = "{\"@context\":["
+					+ "\"https://www.w3.org/ns/activitystreams\","
+					+ "\"https://w3id.org/security/v1\","
+					+ "{\"manuallyApprovesFollowers\":\"as:manuallyApprovesFollowers\","
+					+ "\"toot\":\"http://joinmastodon.org/ns#\","
+					+ "\"featured\":{"
+						+ "\"@id\":\"toot:featured\","
+						+ "\"@type\":\"@id\"}"
+					+ ",\"featuredTags\":{"
+						+ "\"@id\":\"toot:featuredTags\","
+						+ "\"@type\":\"@id\"},"
+					+ "\"alsoKnownAs\":{"
+						+ "\"@id\":\"as:alsoKnownAs\","
+						+ "\"@type\":\"@id\"},"
+					+ "\"movedTo\":{"
+						+ "\"@id\":\"as:movedTo\","
+						+ "\"@type\":\"@id\"},"
+					+ "\"schema\":\"http://schema.org#\","
+					+ "\"PropertyValue\":\"schema:PropertyValue\","
+					+ "\"value\":\"schema:value\","
+					+ "\"discoverable\":\"toot:discoverable\","
+					+ "\"Device\":\"toot:Device\","
+					+ "\"Ed25519Signature\":\"toot:Ed25519Signature\","
+					+ "\"Ed25519Key\":\"toot:Ed25519Key\","
+					+ "\"Curve25519Key\":\"toot:Curve25519Key\","
+					+ "\"EncryptedMessage\":\"toot:EncryptedMessage\","
+					+ "\"publicKeyBase64\":\"toot:publicKeyBase64\","
+					+ "\"deviceId\":\"toot:deviceId\","
+					+ "\"claim\":{\"@type\":\"@id\",\"@id\":\"toot:claim\"},"
+					+ "\"fingerprintKey\":{"
+						+ "\"@type\":\"@id\","
+						+ "\"@id\":\"toot:fingerprintKey\"},"
+					+ "\"identityKey\":{"
+						+ "\"@type\":\"@id\","
+						+ "\"@id\":\"toot:identityKey\"},"
+					+ "\"devices\":{"
+						+ "\"@type\":\"@id\","
+						+ "\"@id\":\"toot:devices\"},"
+					+ "\"messageFranking\":\"toot:messageFranking\","
+					+ "\"messageType\":\"toot:messageType\","
+					+ "\"cipherText\":\"toot:cipherText\","
+					+ "\"suspended\":\"toot:suspended\"}],"
+				+ "\"id\":\"https://universeodon.com/users/festaindctest\","
+				+ "\"type\":\"Person\","
+				+ "\"following\":\"https://universeodon.com/users/festaindctest/following\","
+				+ "\"followers\":\"https://universeodon.com/users/festaindctest/followers\","
+				+ "\"inbox\":\"https://universeodon.com/users/festaindctest/inbox\","
+				+ "\"outbox\":\"https://universeodon.com/users/festaindctest/outbox\","
+				+ "\"featured\":\"https://universeodon.com/users/festaindctest/collections/featured\","
+				+ "\"featuredTags\":\"https://universeodon.com/users/festaindctest/collections/tags\","
+				+ "\"preferredUsername\":\"festaindctest\","
+				+ "\"name\":\"Andy\","
+				+ "\"summary\":\"\","
+				+ "\"url\":\"https://universeodon.com/@festaindctest\","
+				+ "\"manuallyApprovesFollowers\":false,"
+				+ "\"discoverable\":false,"
+				+ "\"published\":\"2023-02-11T00:00:00Z\","
+				+ "\"devices\":\"https://universeodon.com/users/festaindctest/collections/devices\","
+				+ "\"publicKey\":{"
+					+ "\"id\":\"https://universeodon.com/users/festaindctest#main-key\","
+					+ "\"owner\":\"https://universeodon.com/users/festaindctest\","
+					+ "\"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyly+DZZ/ZenfA9iqSCv3\\nbovf25Mk23xi2ugZqsB7bV/TP5YjwmGlin/ZZIm+i0sIJpelknZdQyYzVLXwvUTk\\nKkqhReYXJF3y4Co3JIWJ47k3gjzD+4U5B4fKhch/BlnkQbpfA2vjAtw6Ql9IcjNc\\nctNJ2pr6w+W7RFmLkLj/I0cgzzo9Pc72LTL3s61ON8/wXMm+j1FytSsIkyXlMQbm\\nVJHMyNnNdDyCvn1suWGKOsvCagiwgs5aeOohQBMw02rFS7I3zJEpiy8n7IA51eP9\\n6aZ5NgdwQ+0w2xTERJ6OICPwGljFE/pe088mSHnUiwGKf8RL2dbHAuR9l6Ke+ann\\nDQIDAQAB\\n-----END PUBLIC KEY-----\\n\"},"
+				+ "\"tag\":[],"
+				+ "\"attachment\":[],"
+				+ "\"endpoints\":{"
+					+ "\"sharedInbox\":\"https://universeodon.com/inbox\"}}";
+		
+		// Deserialize
+		BaseObjectOrLink object = mapper.readValue(json, BaseObjectOrLink.class);
+				
+		assertTrue(object instanceof Person);
+		Person person = (Person) object;
+		assertEquals("https://universeodon.com/users/festaindctest",person.getId().toString());
+		assertEquals("https://universeodon.com/users/festaindctest/inbox",person.getInbox().toString());
+		assertEquals("https://universeodon.com/users/festaindctest/outbox",person.getOutbox().toString());
+		assertEquals("festaindctest",person.getPreferredUsername());
+		
+		
+	}
 }

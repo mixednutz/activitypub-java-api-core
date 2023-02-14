@@ -1,5 +1,6 @@
 package org.w3c.activitystreams.model;
 
+import org.springframework.http.MediaType;
 import org.w3c.activitypub.util.PropertySerializer;
 import org.w3c.activitystreams.Activity;
 
@@ -8,6 +9,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonTypeName ("Activity")
 public class ActivityImpl extends BaseObjectOrLink implements Activity {
+	
+	
+	public static final MediaType APPLICATION_ACTIVITY;
+	public static final String APPLICATION_ACTIVITY_VALUE = "application/activity+json";
+	
+	static {
+		APPLICATION_ACTIVITY = new MediaType("application", "activity+json");
+	}
 
 	public ActivityImpl(String type) {
 		super(type);
