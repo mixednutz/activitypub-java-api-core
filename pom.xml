@@ -4,7 +4,7 @@
 	
 	<groupId>net.mixednutz</groupId>
 	<artifactId>activitypub-java-api-core</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>MixedNutz Java API Core Implementation</name>
@@ -30,7 +30,7 @@
 		<connection>scm:git:ssh://git@github.com/mixednutz/activitypub-java-api-core.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/mixednutz/activitypub-java-api-core.git</developerConnection>
 		<url>https://github.com/mixednutz/mixednutz-java-api-core</url>
-		<tag>activitypub-java-api-core-0.0.5</tag>
+		<tag>HEAD</tag>
     </scm>
 	
 	<!-- 
