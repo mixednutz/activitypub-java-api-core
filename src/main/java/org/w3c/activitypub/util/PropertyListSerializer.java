@@ -39,7 +39,7 @@ public class PropertyListSerializer extends StdSerializer<List<BaseObjectOrLink>
 	@Override
 	public void serialize(List<BaseObjectOrLink> list, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		log.debug("serialize: list: {}", list);
-		if (list.size() > 1) {
+		if (list.size() > 1 || list.isEmpty()) {
 			gen.writeStartArray(list.size());
 			for (BaseObjectOrLink value : list) {
 				serializeWithType(value, gen, serializers, null);
