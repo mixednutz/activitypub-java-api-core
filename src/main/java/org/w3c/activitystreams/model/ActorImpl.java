@@ -2,6 +2,7 @@ package org.w3c.activitystreams.model;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.activitypub.Actor;
 import org.w3c.activitypub.util.PropertyListSerializer;
@@ -18,6 +19,7 @@ public class ActorImpl extends org.w3c.activitystreams.model.BaseObjectOrLink im
 	private URI outbox;
 	private URI followers;
 	private URI following;
+	private Map<String, URI> endpoints;
 	
 	private String preferredUsername;
 	
@@ -75,6 +77,12 @@ public class ActorImpl extends org.w3c.activitystreams.model.BaseObjectOrLink im
 	}
 	public void setPublicKey(PublicKey publicKey) {
 		this.publicKey = publicKey;
+	}
+	public Map<String, URI> getEndpoints() {
+		return endpoints;
+	}
+	public void setEndpoints(Map<String, URI> endpoints) {
+		this.endpoints = endpoints;
 	}
 
 }
