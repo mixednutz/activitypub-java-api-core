@@ -10,7 +10,9 @@ import org.w3c.activitypub.util.PropertySerializer;
 import org.w3c.activitystreams.ObjectOrLink;
 import org.w3c.activitystreams.model.activity.Accept;
 import org.w3c.activitystreams.model.activity.Create;
+import org.w3c.activitystreams.model.activity.Delete;
 import org.w3c.activitystreams.model.activity.Follow;
+import org.w3c.activitystreams.model.activity.Undo;
 import org.w3c.activitystreams.model.actor.Person;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -36,13 +38,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 	@Type (value = Accept.class),
     @Type (value = CollectionImpl.class),
     @Type (value = Create.class),
+    @Type (value = Delete.class),	
     @Type (value = Follow.class),
     @Type (value = ImageImpl.class),
     @Type (value = LinkImpl.class),
     @Type (value = Note.class),
     @Type (value = OrderedCollectionImpl.class),
     @Type (value = OrderedCollectionPageImpl.class),
-    @Type (value = Person.class)})
+    @Type (value = Person.class),
+    @Type (value = Undo.class)})
 @JsonIgnoreProperties (ignoreUnknown = true)
 @JsonPropertyOrder(value={"@context", "type", "id", "name"}, alphabetic=true)
 public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectOrLink {
