@@ -13,6 +13,7 @@ import org.w3c.activitystreams.model.activity.Create;
 import org.w3c.activitystreams.model.activity.Delete;
 import org.w3c.activitystreams.model.activity.Follow;
 import org.w3c.activitystreams.model.activity.Undo;
+import org.w3c.activitystreams.model.activity.Update;
 import org.w3c.activitystreams.model.actor.Person;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -46,7 +47,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
     @Type (value = OrderedCollectionImpl.class),
     @Type (value = OrderedCollectionPageImpl.class),
     @Type (value = Person.class),
-    @Type (value = Undo.class)})
+    @Type (value = Undo.class),
+    @Type (value = Update.class)})
 @JsonIgnoreProperties (ignoreUnknown = true)
 @JsonPropertyOrder(value={"@context", "type", "id", "name"}, alphabetic=true)
 public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectOrLink {
@@ -77,6 +79,7 @@ public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectO
 	BaseObjectOrLink inReplyTo;
 	
 	ZonedDateTime published;
+	ZonedDateTime updated;
 	
 	URI href;
 	@JsonIgnore
@@ -152,6 +155,13 @@ public class BaseObjectOrLink implements org.w3c.activitystreams.Object, ObjectO
 	}
 	public void setPublished(ZonedDateTime published) {
 		this.published = published;
+	}
+	
+	public ZonedDateTime getUpdated() {
+		return updated;
+	}
+	public void setUpdated(ZonedDateTime updated) {
+		this.updated = updated;
 	}
 	
 	public BaseObjectOrLink getAttributedTo() {
