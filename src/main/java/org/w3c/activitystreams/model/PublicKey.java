@@ -5,7 +5,6 @@ import java.net.URI;
 public class PublicKey {
 
 	URI id;
-	String keyName;
 	URI owner;
 	String publicKeyPem;
 	
