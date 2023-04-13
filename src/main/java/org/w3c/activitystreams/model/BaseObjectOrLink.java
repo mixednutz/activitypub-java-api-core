@@ -14,6 +14,7 @@ import org.w3c.activitystreams.model.activity.Delete;
 import org.w3c.activitystreams.model.activity.Follow;
 import org.w3c.activitystreams.model.activity.Undo;
 import org.w3c.activitystreams.model.activity.Update;
+import org.w3c.activitystreams.model.actor.Application;
 import org.w3c.activitystreams.model.actor.Person;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -37,6 +38,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 	@Type (value = ActivityImpl.class),
 	@Type (value = ActorImpl.class),
 	@Type (value = Accept.class),
+	@Type (value = Application.class),
     @Type (value = CollectionImpl.class),
     @Type (value = Create.class),
     @Type (value = Delete.class),	
